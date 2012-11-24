@@ -6,6 +6,7 @@
 //
 
 #import "UIDevice+UserInterfaceExtendedIdiom.h"
+#import <objc/runtime.h>
 
 #define IPHONE5_HEIGHT 568
 
@@ -13,7 +14,31 @@
 
 + (void)load
 {
-    //This function swizzles these two methods. So when calling one by its name, the other will actually be called.
+    // Swizzle userInterfaceIdiom and userInterfaceExendedIdiom.  First, we defensively check
+    // that both methods exist AND copy them into the current class in case they are implemented
+    // by a superclass.  This is unlikely (particularly in the case of our added method) but
+    // better to be safe than sorry.
+
+    Method origMethod = class_getInstanceMethod(self, @selector(userInterfaceIdiom));
+    if (!origMethod) return;
+    
+    Method altMethod = class_getInstanceMethod(self, @selector(userInterfaceExtendedIdiom));
+    if (!altMethod) return;
+        
+    class_addMethod(
+        self,
+        @selector(userInterfaceIdiom),
+        class_getMethodImplementation(self, @selector(userInterfaceIdiom)),
+        method_getTypeEncoding(origMethod)
+    );
+	
+    class_addMethod(
+        self,
+        @selector(userInterfaceExtendedIdiom),
+        class_getMethodImplementation(self, @selector(userInterfaceExtendedIdiom)),
+        method_getTypeEncoding(altMethod)
+    );
+
     method_exchangeImplementations(
         class_getInstanceMethod(self, @selector(userInterfaceIdiom)),
         class_getInstanceMethod(self, @selector(userInterfaceExtendedIdiom))
