@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 typedef enum {
-    UIUserInterfaceIdiomPhone5 = 1000 //At 1000, hopefully this won't conflict with any possible future Apple UI idioms
+    UIUserInterfaceIdiomPhoneWide = 1000 //At 1000, hopefully this won't conflict with any possible future Apple UI idioms
 } UIUserInterfaceIdiomExtended;
 
 @interface UIDevice (UserInterfaceExtendedIdiom)
