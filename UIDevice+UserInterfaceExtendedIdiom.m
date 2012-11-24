@@ -8,7 +8,7 @@
 #import "UIDevice+UserInterfaceExtendedIdiom.h"
 #import <objc/runtime.h>
 
-#define IPHONE5_HEIGHT 568
+const CGFloat IPHONE_WIDE_RATIO = 1.775;
 
 @implementation UIDevice (UserInterfaceExtendedIdiom)
 
@@ -51,15 +51,16 @@
     UIUserInterfaceIdiom interfaceIdiom = [self userInterfaceExtendedIdiom];
     
     //if it's not iPad, subject it to further scrutiny
-    if( interfaceIdiom == UIUserInterfaceIdiomPhone )
+    if(UIUserInterfaceIdiomPhone == interfaceIdiom)
     {
         CGSize screenSize = [[UIScreen mainScreen] bounds].size;
-        NSInteger screenHeight = (NSInteger)(MAX(screenSize.width,screenSize.height)); //Make sure we're getting the physical height, regardless of orientation
         
-        if( screenHeight == IPHONE5_HEIGHT )
-            return UIUserInterfaceIdiomPhone5;
+        CGFloat ratio = MAX(screenSize.width, screenSize.height) / MIN(screenSize.width, screenSize.height);
+        
+        if (fabs(ratio - IPHONE_WIDE_RATIO) < DBL_EPSILON)
+            return UIUserInterfaceIdiomPhoneWide;
     }
-    
+
     return interfaceIdiom;
 }
 
